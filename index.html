@@ -13,6 +13,15 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        processEscapes: true
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
   <title>Image-to-Point Cloud Registration (IROS 2026)</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
@@ -27,8 +36,8 @@
     <div class="row">
       <div class="col-12 text-center">
         <h2>
-          SMD <br>
-          SMD
+          LiV3R: Unified Feed-Forward Transformer for Universal Registration <br>
+          Across LiDAR and Vision
         </h2>
       </div>
     </div>
@@ -36,27 +45,33 @@
     <!-- Venue -->
     <div class="row mt-2">
       <div class="col-12 text-center">
-        <h5 class="text-muted">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2026)</h5>
+        <h5 class="text-muted">IEEE International Conference on Robotics and Automation (ICRA) 2027</h5>
       </div>
     </div>
 
     <hr class="my-4">
 
-    <!-- Teaser GIFs -->
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <div class="ratio ratio-16x9">
-          <img src="images/upsampling/sparse.gif" alt="Sparse LiDAR" class="img-fluid" style="object-fit: cover; width:100%; height:100%;">
-        </div>
-        <p class="text-center mt-1 text-muted small">Input Image</p>
+    <!-- I2P Results -->
+    <section aria-labelledby="i2p-results-title">
+      <h4 id="i2p-results-title" class="mb-3 text-center">I2P Registration Results</h4>
+      <div class="row g-4 justify-content-center">
+        <figure class="col-md-6 mb-0">
+          <div class="ratio ratio-16x9 demo-frame">
+            <img src="images/demo/icra2027_in_house_dataset_i2p.gif" alt="In-house Dataset I2P registration result">
+          </div>
+          <figcaption class="text-center mt-2 fs-5">In-house Dataset</figcaption>
+        </figure>
+        <figure class="col-md-6 mb-0">
+          <div class="ratio ratio-16x9 demo-frame">
+            <img src="images/demo/icra2027_r3live_dataset_i2p.gif" alt="R3LIVE Dataset I2P registration result">
+          </div>
+          <figcaption class="text-center mt-2 fs-5">
+            R3LIVE Dataset
+            <sup><a href="https://arxiv.org/abs/2109.07982" target="_blank" rel="noopener noreferrer" aria-label="R3LIVE paper on arXiv">[1]</a></sup>
+          </figcaption>
+        </figure>
       </div>
-      <div class="col-md-6 mb-3">
-        <div class="ratio ratio-16x9">
-          <img src="images/upsampling/dense.gif" alt="Dense LiDAR" class="img-fluid" style="object-fit: cover; width:100%; height:100%;">
-        </div>
-        <p class="text-center mt-1 text-muted small">Generated Image</p>
-      </div>
-    </div>
+    </section>
 
     <hr class="my-4">
 
@@ -65,10 +80,13 @@
       <div class="col-12">
         <h4 class="mb-3 text-center">Abstract</h4>
         <p class="text-justify">
-          Image-to-Point Cloud Registration (I2P) is essential for integrating camera and LiDAR in perception and autonomous systems, yet the modality gap between images and point clouds makes it difficult to achieve both high accuracy and strong generalization.
-          In this paper, we propose a simple yet effective I2P method that treats LiDAR as an imaging sensor: from a single sparse LiDAR scan, we generate a dense LiDAR intensity image using Conditional Rectified Flow, match it with a camera image using a pre-trained feature matcher, and estimate the 6-DoF relative pose via PnP-RANSAC.
-          The proposed model is pre-trained through a self-supervised image completion task and fine-tuned on a small amount of LiDAR data (neither image-point cloud pairs nor ground-truth sensor poses are required), enabling it to scale to diverse LiDAR and camera configurations.
-          Experiments on the R2LIVE dataset show that the proposed method achieves a mean error of 4.89° / 1.63 m, outperforming existing methods, while completing a single registration in approximately 0.68 s.
+          This paper presents LiV3R, a unified feed-forward registration model that supports both RGB camera and LiDAR inputs.
+          LiV3R builds upon MapAnything, a feed-forward transformer-based 3D reconstruction model, and adapts its strong geometric reasoning capability to LiDAR observations.
+          To enable LiDAR adaptation without requiring large-scale image--LiDAR pair datasets, we introduce a cost-efficient training strategy that first pretrains the model using pseudo-LiDAR data generated from existing RGB-D datasets and then fine-tunes it on a relatively small amount of real LiDAR data.
+          We further introduce a dedicated LiDAR encoder that jointly encodes intensity, geometric cues, and sparsity information into the shared feature space.
+          Through extensive ablation studies, we show that early injection of LiDAR sparsity, combined with joint encoding of intensity and geometric cues, yields effective LiDAR representations for registration.
+          LiV3R directly estimates relative sensor poses in a single forward pass without explicit cross-modal correspondence search or pose estimation, and supports arbitrary pairs of image and point cloud inputs within a single model.
+          Experiments on the R$^3$LIVE dataset demonstrate registration accuracy competitive with task-specific methods.
         </p>
       </div>
     </div>
@@ -77,60 +95,124 @@
 
     <!-- System Overview -->
     <div class="row">
-      <div class="col-12 d-flex flex-column align-items-center">
-        <h4 class="mb-3">System Overview</h4>
-        <p class="text-justify">
-          Overview of the proposed Image-to-Point Cloud registration pipeline. Given a sparse LiDAR scan and a camera image, the Conditional Rectified Flow module generates a dense LiDAR intensity image, which is then matched to the camera image via feature matching.
-          The resulting 2D-3D correspondences are fed into PnP-RANSAC to estimate the 6-DoF relative pose.</p>
-        <img src="images/pipeline.jpg" alt="System Overview" class="img-fluid" style="max-width:90%;">
-      </div>
-    </div>
-
-    <hr class="my-4">
-
-    <!-- Model Architecture -->
-    <div class="row">
-      <div class="col-12 d-flex flex-column align-items-center">
-        <h4 class="mb-3">Model Architecture</h4>
-        <img src="images/model.jpg" alt="Model Architecture" class="img-fluid" style="max-width:90%;">
-      </div>
-    </div>
-
-    <hr class="my-4">
-
-    <!-- Registration Experiments -->
-    <div class="row">
       <div class="col-12">
-        <h4 class="mb-3 text-center">Registration Experiments</h4>
+        <h4 class="mb-3 text-center">System Overview</h4>
+        <p class="text-justify">
+          Given $N$ inputs comprising RGB images, LiDAR point clouds, and optional geometric cues, LiV3R projects each modality into a shared latent space using modality-specific encoders. Each LiDAR scan is preprocessed into a single-channel intensity image together with ray directions, depth, and a sparsity mask; these signals are stacked and jointly fed into the LiDAR encoder. We investigate four LiDAR encoding variants, shown in (a)–(d), to identify the most effective way to incorporate intensity, geometry, and sparsity.
+        </p>
+        <figure class="system-overview-figure">
+          <a href="images/systemoverview.pdf" target="_blank" rel="noopener" aria-label="Open the System Overview figure as a PDF">
+            <img src="images/systemoverview.png" alt="LiV3R system overview and four LiDAR encoding variants" class="system-overview-image" width="2723" height="1098">
+          </a>
+          <figcaption class="mt-2 text-center text-muted small">
+            Overview of LiV3R and the four LiDAR encoder variants.
+            <a href="images/systemoverview.pdf" target="_blank" rel="noopener">Open the full-resolution PDF</a>.
+          </figcaption>
+        </figure>
       </div>
     </div>
 
-    <div class="row justify-content-center">
-      <div class="col-6 col-md-3 mb-3">
-        <div class="ratio ratio-16x9">
-          <img src="images/gt.gif" alt="GT" class="img-fluid" style="object-fit: cover; width:100%; height:100%;">
-        </div>
-        <p class="text-center mt-2 mb-0 fs-5">GT</p>
-      </div>
-      <div class="col-6 col-md-3 mb-3">
-        <div class="ratio ratio-16x9">
-          <img src="images/rf.gif" alt="Ours" class="img-fluid" style="object-fit: cover; width:100%; height:100%;">
-        </div>
-        <p class="text-center mt-2 mb-0 fs-5">Ours</p>
-      </div>
-      <div class="col-6 col-md-3 mb-3">
-        <div class="ratio ratio-16x9">
-          <img src="images/2d3dmatr.gif" alt="2D3D-MATR" class="img-fluid" style="object-fit: cover; width:100%; height:100%;">
-        </div>
-        <p class="text-center mt-2 mb-0 fs-5">2D3D-MATR</p>
-      </div>
-      <div class="col-6 col-md-3 mb-3">
-        <div class="ratio ratio-16x9">
-          <img src="images/freereg.gif" alt="FreeReg" class="img-fluid" style="object-fit: cover; width:100%; height:100%;">
-        </div>
-        <p class="text-center mt-2 mb-0 fs-5">FreeReg</p>
-      </div>
-    </div>
+    <hr class="my-4">
+
+    <!-- Registration Demos -->
+    <section aria-labelledby="registration-demos-title">
+      <h4 id="registration-demos-title" class="mb-4 text-center">Registration Demos</h4>
+
+      <section class="demo-scene mb-5" aria-labelledby="in-house-dataset-title">
+        <h5 id="in-house-dataset-title" class="demo-scene-title">In-house Dataset</h5>
+
+        <article class="demo-task">
+          <h6 class="demo-task-title">Image-to-Image</h6>
+          <div class="demo-pair" role="group" aria-label="In-house Dataset I2I input and result">
+            <div class="demo-pair-media demo-input-media">
+              <span class="demo-media-label">Input</span>
+              <img src="images/demo/in_house_dataset_i2i_input.png" alt="In-house Dataset I2I input" loading="lazy" decoding="async">
+            </div>
+            <div class="demo-pair-media demo-result-media">
+              <span class="demo-media-label">Result</span>
+              <img src="images/demo/icra2027_in_house_dataset_i2i.gif" alt="In-house Dataset I2I registration result" loading="lazy" decoding="async">
+            </div>
+          </div>
+        </article>
+
+        <article class="demo-task">
+          <h6 class="demo-task-title">Image-to-Point cloud</h6>
+          <div class="demo-pair" role="group" aria-label="In-house Dataset I2P input and result">
+            <div class="demo-pair-media demo-input-media">
+              <span class="demo-media-label">Input</span>
+              <img src="images/demo/in_house_dataset_i2p_input.png" alt="In-house Dataset I2P input" loading="lazy" decoding="async">
+            </div>
+            <div class="demo-pair-media demo-result-media">
+              <span class="demo-media-label">Result</span>
+              <img src="images/demo/icra2027_in_house_dataset_i2p.gif" alt="In-house Dataset I2P registration result" loading="lazy" decoding="async">
+            </div>
+          </div>
+        </article>
+
+        <article class="demo-task mb-0">
+          <h6 class="demo-task-title">Point cloud-to-Point cloud</h6>
+          <div class="demo-pair" role="group" aria-label="In-house Dataset P2P input and result">
+            <div class="demo-pair-media demo-input-media">
+              <span class="demo-media-label">Input</span>
+              <img src="images/demo/in_house_dataset_p2p_input.png" alt="In-house Dataset P2P input" loading="lazy" decoding="async">
+            </div>
+            <div class="demo-pair-media demo-result-media">
+              <span class="demo-media-label">Result</span>
+              <img src="images/demo/icra2027_in_house_dataset_p2p.gif" alt="In-house Dataset P2P registration result" loading="lazy" decoding="async">
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="demo-scene" aria-labelledby="r3live-dataset-title">
+        <h5 id="r3live-dataset-title" class="demo-scene-title">
+          R3LIVE Dataset
+          <sup><a href="https://arxiv.org/abs/2109.07982" target="_blank" rel="noopener noreferrer" aria-label="R3LIVE paper on arXiv">[1]</a></sup>
+        </h5>
+
+        <article class="demo-task">
+          <h6 class="demo-task-title">Image-to-Image</h6>
+          <div class="demo-pair" role="group" aria-label="R3LIVE Dataset I2I input and result">
+            <div class="demo-pair-media demo-input-media">
+              <span class="demo-media-label">Input</span>
+              <img src="images/demo/r3live_dataset_i2i_input.png" alt="R3LIVE Dataset I2I input" loading="lazy" decoding="async">
+            </div>
+            <div class="demo-pair-media demo-result-media">
+              <span class="demo-media-label">Result</span>
+              <img src="images/demo/icra2027_r3live_dataset_i2i.gif" alt="R3LIVE Dataset I2I registration result" loading="lazy" decoding="async">
+            </div>
+          </div>
+        </article>
+
+        <article class="demo-task">
+          <h6 class="demo-task-title">Image-to-Point cloud</h6>
+          <div class="demo-pair" role="group" aria-label="R3LIVE Dataset I2P input and result">
+            <div class="demo-pair-media demo-input-media">
+              <span class="demo-media-label">Input</span>
+              <img src="images/demo/r3live_dataset_i2p_input.png" alt="R3LIVE Dataset I2P input" loading="lazy" decoding="async">
+            </div>
+            <div class="demo-pair-media demo-result-media">
+              <span class="demo-media-label">Result</span>
+              <img src="images/demo/icra2027_r3live_dataset_i2p.gif" alt="R3LIVE Dataset I2P registration result" loading="lazy" decoding="async">
+            </div>
+          </div>
+        </article>
+
+        <article class="demo-task mb-0">
+          <h6 class="demo-task-title">Point cloud-to-Point cloud</h6>
+          <div class="demo-pair" role="group" aria-label="R3LIVE Dataset P2P input and result">
+            <div class="demo-pair-media demo-input-media">
+              <span class="demo-media-label">Input</span>
+              <img src="images/demo/r3live_dataset_p2p_input.png" alt="R3LIVE Dataset P2P input" loading="lazy" decoding="async">
+            </div>
+            <div class="demo-pair-media demo-result-media">
+              <span class="demo-media-label">Result</span>
+              <img src="images/demo/icra2027_r3live_dataset_p2p.gif" alt="R3LIVE Dataset P2P registration result" loading="lazy" decoding="async">
+            </div>
+          </div>
+        </article>
+      </section>
+    </section>
 
     <!-- Video (placeholder, uncomment when ready) -->
     <!--
